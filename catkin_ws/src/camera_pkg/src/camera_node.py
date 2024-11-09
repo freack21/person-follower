@@ -72,75 +72,19 @@ class CameraNode :
     cmd = ""
 
     if np.abs(x_margin) <= 3 and np.abs(y_margin) <= 4 :
-      ros_data.data = "hidupkanPenggiring"
-      self.command_pub.publish(ros_data)
-
       cmd = "berhenti"
-      self.lastCmd = ""
-      ros_data.data = cmd
-      self.command_pub.publish(ros_data)
-
-      ros_data.data = "stop"
-      self.vision_pub.publish(ros_data)
-      return
-    elif np.abs(y_margin) <= 64 :
-      if np.abs(x_margin) <= 9 :
-        cmd = "majuPelan"
-      else :
-        if x_margin < 0 :
-          cmd = "putarKiriPelan"
-        else :
-          cmd = "putarKananPelan"
-
-    elif np.abs(x_margin) <= 16 :
-      if y_margin < 0 :
-        if y_margin >= -80 :
-          cmd = "maju"
-      elif y_margin > 0 :
-        if x_margin < 0 :
-          cmd = "putarKiriPelan"
-        else :
-          cmd = "putarKananPelan"
-
-    elif np.abs(x_margin) <= 32 :
-      if y_margin < 0 :
-        if y_margin >= -128 :
-          cmd = "maju"
-      elif y_margin > 0 :
-        if x_margin < 0 :
-          cmd = "putarKiri"
-        else :
-          cmd = "putarKanan"
-
-    elif y_margin < -128 :
-      if np.abs(x_margin) <= 64 :
-        cmd = "maju"
-      else :
-        if x_margin < 0 :
-          cmd = "putarKiri"
-        else :
-          cmd = "putarKanan"
-
     elif x_margin < 0 :
-      if x_margin >= -48 :
-        cmd = "putarKiriPelan"
-      else :
-        cmd = "putarKiri"
+      cmd = "kiri_atas"
     elif x_margin > 0 :
-      if x_margin <= 48 :
-        cmd = "putarKananPelan"
-      else :
-        cmd = "putarKanan"
+      cmd = "kanan_atas"
 
     if self.lastCmd == cmd :
       return
 
     self.lastCmd = cmd
     ros_data.data = cmd
-    self.command_pub.publish(ros_data)
-    if cmd == "majuPelan" :
-      ros_data.data = "hidupkanPenggiring"
-      self.command_pub.publish(ros_data)
+    # self.command_pub.publish(ros_data)
+    rospy.loginfo('[CameraNode] followPerson: %s', cmd)
 
 
   def run(self) :
@@ -220,10 +164,16 @@ class CameraNode :
 
           # Display the distances at the end of each line
           cv2.putText(frame, f"Up: {distance_up}px", (center_x + 10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-          cv2.putText(frame, f"Down: {distance_down}px", (center_x + 10, height - 120), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+          cv2.putText(frame, f"Down: {distance_down}px", (center_x + 10, height - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
           label = f"Class {int(classes[heighest_index])} - {int(scores[heighest_index] * 100)}%"
           cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+          x_margin = distance_left - distance_right
+          y_margin = distance_up - distance_down
+
+          if self.requestedService == "followPerson" :
+            self.followPerson(classes[heighest_index], x_margin, y_margin)
 
         # fps = cap.get(cv2.CAP_PROP_FPS)
         cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

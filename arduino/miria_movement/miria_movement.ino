@@ -28,7 +28,7 @@ int L_EN3=36;
 
 int vSpeed = 0;
 bool isReset = false;
-bool isCommandDone = false;
+bool isCommandDone = true;
 
 //----
 std_msgs::String cmd_status; //-+ message variable for cmd_status_topic_
