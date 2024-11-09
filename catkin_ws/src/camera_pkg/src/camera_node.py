@@ -31,7 +31,7 @@ class CameraNode :
       raise Exception("[CameraNode] No Camera")
 
     # Load model SSD MobileNet TFLite
-    self.interpreter = tf.lite.Interpreter(model_path=os.path.join(os.path.dirname(__file__), "model1.tflite"))
+    self.interpreter = tf.lite.Interpreter(model_path=os.path.join(os.path.dirname(__file__), "model/model1.tflite"))
     self.interpreter.allocate_tensors()
 
     # Dapatkan informasi input dan output
@@ -143,37 +143,6 @@ class CameraNode :
       self.command_pub.publish(ros_data)
 
 
-  def hadapBola(self, label, x_margin, y_margin):
-    if label != "bola" :
-      return
-
-    ros_data = String()
-    cmd = ""
-
-    # if (np.abs(x_margin) <= 3 and np.abs(y_margin) <= 4) or (np.abs(x_margin) <= 4 and np.abs(y_margin) <= 64) or (np.abs(x_margin) <= 5 and np.abs(y_margin) > 64) :
-    if (np.abs(x_margin) <= 1) :
-      cmd = "berhenti"
-      self.lastCmd = ""
-      ros_data.data = cmd
-      self.command_pub.publish(ros_data)
-
-      ros_data.data = "stop"
-      self.vision_pub.publish(ros_data)
-      return
-    else :
-      if x_margin < 0 :
-        cmd = "putarKiriPelan"
-      else :
-        cmd = "putarKananPelan"
-
-    if self.lastCmd == cmd :
-      return
-
-    self.lastCmd = cmd
-    ros_data.data = cmd
-    self.command_pub.publish(ros_data)
-
-
   def run(self) :
     while not rospy.is_shutdown():
       # Capture frame from the webcam
@@ -259,12 +228,12 @@ class CameraNode :
         # fps = cap.get(cv2.CAP_PROP_FPS)
         cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        # Tampilkan frame
-        cv2.imshow("SSD MobileNet TFLite Detection", frame)
+      # Tampilkan frame
+      cv2.imshow("SSD MobileNet TFLite Detection", frame)
 
-        # Tekan 'q' untuk keluar
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+      # Tekan 'q' untuk keluar
+      if cv2.waitKey(1) & 0xFF == ord('q'):
+          break
 
     # Release the camera and close windows
     self.cap.release()
