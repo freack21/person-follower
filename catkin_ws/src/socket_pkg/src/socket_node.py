@@ -18,9 +18,9 @@ class SocketNode :
 
   def initGlobalVars(self) :
     self.myUsername = "Miria"
-    # self.alamatIP = "http://10.234.162.69:3000/"
+    self.alamatIP = "http://10.234.218.255:3000/"
     # self.alamatIP = "http://172.16.252.147:3000/"
-    self.alamatIP = "http://localhost:3000/"
+    # self.alamatIP = "http://localhost:3000/"
 
     self.isRequestedVision = False
 
