@@ -6,3 +6,6 @@ catkin_ws/*.pyc
 catkin_ws/.vscode/
 *.pyc
 .vscode/
+
+
+basestation/node_modules/

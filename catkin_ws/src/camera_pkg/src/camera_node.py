@@ -64,8 +64,8 @@ class CameraNode :
       self.requestedService = vision_data
 
 
-  def ambilBola(self, label, x_margin, y_margin):
-    if label != "bola" :
+  def followPerson(self, label, x_margin, y_margin):
+    if label != 0 :
       return
 
     ros_data = String()

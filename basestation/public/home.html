@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kontrol Robot Miria</title>
+    <style>
+      /* Reset beberapa gaya default */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Background dan pengaturan halaman */
+      body {
+        background: linear-gradient(135deg, #fff, #aaa);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: white;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 36px;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Panel kontrol utama */
+      .control-panel {
+        background: rgba(50, 50, 50, 0.6);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        width: 350px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Kontainer tombol joystick */
+      .joystick {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 kolom */
+        grid-template-rows: repeat(3, 1fr); /* 3 baris */
+        gap: 15px;
+        margin-bottom: 20px;
+        width: 100%; /* Pastikan grid memenuhi lebar kontainer */
+        max-width: 250px; /* Batasi lebar maksimal */
+      }
+
+      .joystick button {
+        background-color: #2e3a45;
+        border: none;
+        padding: 20px;
+        font-size: 24px;
+        color: white;
+        border-radius: 50%;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60px; /* Ukuran tombol yang lebih besar */
+      }
+
+      .joystick button:hover {
+        background-color: #f06c6d;
+        transform: scale(1.1);
+      }
+
+      .joystick button:active {
+        background-color: #d45556;
+        transform: scale(1);
+      }
+
+      .joystick .center {
+        background-color: transparent;
+        cursor: default;
+        pointer-events: none; /* Disable klik pada tombol center */
+      }
+
+      /* Tombol Follow Person */
+      .follow-btn {
+        background-color: #00c853;
+        padding: 15px 25px;
+        border: none;
+        font-size: 20px;
+        color: white;
+        border-radius: 10px;
+        margin-top: 20px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .follow-btn:hover {
+        background-color: #00bfae;
+        transform: scale(1.05);
+      }
+
+      .follow-btn:active {
+        background-color: #00a59e;
+        transform: scale(1);
+      }
+
+      /* Responsivitas untuk layar kecil */
+      @media (max-width: 600px) {
+        .control-panel {
+          width: 90%;
+        }
+
+        .joystick button {
+          font-size: 18px;
+          min-height: 50px; /* Ukuran tombol lebih kecil di layar kecil */
+        }
+      }
+
+      /* Ikon Panah */
+      .arrow {
+        font-size: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="control-panel">
+      <h1>Kontrol Robot Miria</h1>
+
+      <!-- Kontrol Joystick -->
+      <div class="joystick">
+        <!-- Tombol Navigasi -->
+        <button onclick="move('kiri_atas')">
+          <span class="arrow">↖</span>
+        </button>
+        <button onclick="move('maju')">
+          <span class="arrow">↑</span>
+        </button>
+        <button onclick="move('kanan_atas')">
+          <span class="arrow">↗</span>
+        </button>
+        <button onclick="move('kiri')">
+          <span class="arrow">←</span>
+        </button>
+        <button class="center"></button>
+        <button onclick="move('kanan')">
+          <span class="arrow">→</span>
+        </button>
+        <button onclick="move('kiri_bawah')">
+          <span class="arrow">↙</span>
+        </button>
+        <button onclick="move('mundur')">
+          <span class="arrow">↓</span>
+        </button>
+        <button onclick="move('kanan_bawah')">
+          <span class="arrow">↘</span>
+        </button>
+      </div>
+
+      <!-- Tombol Follow Person -->
+      <button class="follow-btn" onclick="followPerson()">Follow Person</button>
+    </div>
+
+    <script>
+      // Fungsi untuk mengirimkan perintah pergerakan
+      function move(direction) {
+        console.log(`Robot Miria bergerak ke: ${direction}`);
+        // Disini kamu bisa menambahkan logika untuk mengirimkan perintah ke robot
+        // Misalnya menggunakan WebSocket atau API untuk mengendalikan robot
+      }
+
+      // Fungsi untuk Follow Person
+      function followPerson() {
+        console.log("Robot Miria mengikuti orang...");
+        // Disini kamu bisa menambahkan logika untuk perintah Follow Person
+        // Misalnya, robot Miria akan mengikuti pergerakan orang melalui sensor atau kamera
+      }
+    </script>
+  </body>
+</html>
