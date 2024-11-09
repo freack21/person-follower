@@ -16,7 +16,7 @@
 
       /* Background dan pengaturan halaman */
       body {
-        background: linear-gradient(135deg, #fff, #aaa);
+        background: linear-gradient(135deg, #000, #555);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -33,7 +33,7 @@
 
       /* Panel kontrol utama */
       .control-panel {
-        background: rgba(50, 50, 50, 0.6);
+        background: rgba(30, 30, 30, 1);
         padding: 40px;
         border-radius: 20px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
@@ -85,9 +85,7 @@
         pointer-events: none; /* Disable klik pada tombol center */
       }
 
-      /* Tombol Follow Person */
-      .follow-btn {
-        background-color: #00c853;
+      .btn {
         padding: 15px 25px;
         border: none;
         font-size: 20px;
@@ -99,6 +97,11 @@
         transition: background-color 0.3s ease, transform 0.2s ease;
       }
 
+      /* Tombol Follow Person */
+      .follow-btn {
+        background-color: #00c853;
+      }
+
       .follow-btn:hover {
         background-color: #00bfae;
         transform: scale(1.05);
@@ -106,6 +109,21 @@
 
       .follow-btn:active {
         background-color: #00a59e;
+        transform: scale(1);
+      }
+
+      /* Tombol Follow Person */
+      .reset-btn {
+        background-color: #c80007;
+      }
+
+      .reset-btn:hover {
+        background-color: #bf2000;
+        transform: scale(1.05);
+      }
+
+      .reset-btn:active {
+        background-color: #a50b00;
         transform: scale(1);
       }
 
@@ -125,11 +143,19 @@
       .arrow {
         font-size: 28px;
       }
+
+      .offline {
+        color: red;
+      }
+
+      .online {
+        color: green;
+      }
     </style>
   </head>
   <body>
     <div class="control-panel">
-      <h1>Kontrol Robot Miria</h1>
+      <h1>Kontrol Robot <span id="robotName" title="Offline" class="offline">Miria</span></h1>
 
       <!-- Kontrol Joystick -->
       <div class="joystick">
@@ -162,22 +188,46 @@
       </div>
 
       <!-- Tombol Follow Person -->
-      <button class="follow-btn" onclick="followPerson()">Follow Person</button>
+      <button class="btn follow-btn" onclick="followPerson()">Follow Person</button>
+      <button class="btn reset-btn" onclick="reset()">Reset</button>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
+      var socket = io();
+
+      socket.emit("ping");
+
+      socket.on("ping", ({ statusOnline, IP_basestation }) => {
+        if (statusOnline) {
+          document.querySelector("#robotName").setAttribute("title", "Online");
+          document.querySelector("#robotName").classList.add("online");
+          document.querySelector("#robotName").classList.remove("offline");
+        } else {
+          document.querySelector("#robotName").setAttribute("title", "Offline");
+          document.querySelector("#robotName").classList.add("offline");
+          document.querySelector("#robotName").classList.remove("online");
+        }
+      });
+
       // Fungsi untuk mengirimkan perintah pergerakan
-      function move(direction) {
-        console.log(`Robot Miria bergerak ke: ${direction}`);
-        // Disini kamu bisa menambahkan logika untuk mengirimkan perintah ke robot
-        // Misalnya menggunakan WebSocket atau API untuk mengendalikan robot
+      function move(perintah) {
+        socket.emit("kirim-perintah", {
+          perintah,
+        });
       }
 
       // Fungsi untuk Follow Person
       function followPerson() {
-        console.log("Robot Miria mengikuti orang...");
-        // Disini kamu bisa menambahkan logika untuk perintah Follow Person
-        // Misalnya, robot Miria akan mengikuti pergerakan orang melalui sensor atau kamera
+        socket.emit("kirim-perintah", {
+          perintah: "vision|followPerson",
+        });
+      }
+
+      function reset() {
+        socket.emit("kirim-perintah", {
+          perintah: "reset",
+        });
       }
     </script>
   </body>

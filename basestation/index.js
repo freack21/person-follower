@@ -169,6 +169,11 @@ io.on("connection", (socket) => {
   //kirim perintah ke robot
   socket.on("kirim-perintah", ({ perintah }) => {
     kirimPerintah(perintah);
+    if (!perintah.includes("vision") && perintah != "reset") {
+      setTimeout(() => {
+        kirimPerintah("berhenti");
+      }, 2000);
+    }
   });
 });
 
