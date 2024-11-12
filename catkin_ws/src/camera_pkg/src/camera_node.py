@@ -31,7 +31,7 @@ class CameraNode :
       raise Exception("[CameraNode] No Camera")
 
     # Load model SSD MobileNet TFLite
-    self.interpreter = tf.lite.Interpreter(model_path=os.path.join(os.path.dirname(__file__), "model/model1.tflite"))
+    self.interpreter = tf.lite.Interpreter(model_path=os.path.join(os.path.dirname(__file__), "model/detect.tflite"))
     self.interpreter.allocate_tensors()
 
     # Dapatkan informasi input dan output
@@ -64,27 +64,29 @@ class CameraNode :
       self.requestedService = vision_data
 
 
-  def followPerson(self, label, x_margin, y_margin):
+  def followPerson(self, label, x_margin, distance_up):
     if label != 0 :
       return
 
     ros_data = String()
     cmd = ""
 
-    if np.abs(x_margin) <= 3 and np.abs(y_margin) <= 4 :
+    if np.abs(distance_up) <= 100 :
       cmd = "berhenti"
+    elif np.abs(x_margin) <= 64 :
+      cmd = "maju"
     elif x_margin < 0 :
-      cmd = "kiri_atas"
-    elif x_margin > 0 :
       cmd = "kanan_atas"
+    elif x_margin > 0 :
+      cmd = "kiri_atas"
 
     if self.lastCmd == cmd :
       return
 
     self.lastCmd = cmd
     ros_data.data = cmd
-    # self.command_pub.publish(ros_data)
-    rospy.loginfo('[CameraNode] followPerson: %s', cmd)
+    self.command_pub.publish(ros_data)
+    # rospy.loginfo('[CameraNode] followPerson: %s', cmd)
 
 
   def run(self) :
@@ -98,16 +100,34 @@ class CameraNode :
         break
 
       if self.isRequested :
-        # Preprocessing gambar (sesuaikan ukuran input sesuai model)
-        input_shape = self.input_details[0]['shape']
-        img_resized = cv2.resize(frame, (input_shape[2], input_shape[1]))
-        img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
+        outname = self.output_details[0]['name']
 
-        # Konversi ke tipe data UINT8
-        img_uint8 = img_rgb.astype(np.uint8)
+        if ('StatefulPartitionedCall' in outname): # This is a TF2 model
+            boxes_idx, classes_idx, scores_idx = 1, 3, 0
+        else: # This is a TF1 model
+            boxes_idx, classes_idx, scores_idx = 0, 1, 2
+
+        height = self.input_details[0]['shape'][1]
+        width = self.input_details[0]['shape'][2]
+
+        floating_model = (self.input_details[0]['dtype'] == np.float32)
+
+        input_mean = 127.5
+        input_std = 127.5
+
+        # Preprocessing gambar (sesuaikan ukuran input sesuai model)
+        frame = cv2.flip(frame, 1)
+        img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        img_resized = cv2.resize(img_rgb, (width, height))
+
+        input_data = np.expand_dims(img_resized, axis=0)
+
+        # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
+        if floating_model:
+            input_data = (np.float32(input_data) - input_mean) / input_std
 
         # Set input tensor
-        self.interpreter.set_tensor(self.input_details[0]['index'], [img_uint8])    
+        self.interpreter.set_tensor(self.input_details[0]['index'], input_data)
 
         _time_mulai = time.time()
 
@@ -118,9 +138,9 @@ class CameraNode :
         fps = 1 / waktu_proses
         
         # Ambil hasil deteksi
-        boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0]  # Bounding box koordinat
-        classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0]  # Kelas objek
-        scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0]   # Skor keyakinan
+        boxes = self.interpreter.get_tensor(self.output_details[boxes_idx]['index'])[0]  # Bounding box koordinat
+        classes = self.interpreter.get_tensor(self.output_details[classes_idx]['index'])[0]  # Kelas objek
+        scores = self.interpreter.get_tensor(self.output_details[scores_idx]['index'])[0]   # Skor keyakinan
 
         # Ambil dimensi frame untuk penyesuaian bounding box
         height, width, _ = frame.shape
@@ -170,14 +190,28 @@ class CameraNode :
           cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
           x_margin = distance_left - distance_right
-          y_margin = distance_up - distance_down
 
           if self.requestedService == "followPerson" :
-            self.followPerson(classes[heighest_index], x_margin, y_margin)
+            self.followPerson(classes[heighest_index], x_margin, distance_up)
+
+        elif self.lastCmd != "berhenti" :
+          self.lastCmd = "berhenti"
+          ros_data = String()
+          ros_data.data = "berhenti"
+          self.command_pub.publish(ros_data)
+
 
         # fps = cap.get(cv2.CAP_PROP_FPS)
         cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
+      elif self.lastCmd != "" :
+        cmd = "berhenti"
+
+        if self.lastCmd != cmd :
+          self.lastCmd = ""
+          ros_data = String()
+          ros_data.data = cmd
+          self.command_pub.publish(ros_data)
       # Tampilkan frame
       cv2.imshow("SSD MobileNet TFLite Detection", frame)
 

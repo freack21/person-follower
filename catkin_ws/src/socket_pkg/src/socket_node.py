@@ -16,10 +16,11 @@ class SocketNode :
     self.initROS()
 
 
+
   def initGlobalVars(self) :
     self.myUsername = "Miria"
-    self.alamatIP = "http://10.234.218.255:3000/"
-    # self.alamatIP = "http://172.16.252.147:3000/"
+    # self.alamatIP = "http://10.234.218.255:3000/"
+    self.alamatIP = "http://172.16.252.77:3000/"
     # self.alamatIP = "http://localhost:3000/"
 
     self.isRequestedVision = False
@@ -75,10 +76,6 @@ class SocketNode :
     # Access individual elements of the cmd_status data
     [msg, isDone] = cmd_status_data.split("|")
 
-    if self.isRequestedVision :
-      msg = "[SocketNode] Sedang menjalankan perintah!"
-      isDone = 0
-
     # Publish the cmd_status data to Basestation
     self.sio.emit('cmd_status', { 'msg': msg, 'isDone': (int(isDone) == 1) })
 
@@ -100,14 +97,19 @@ class SocketNode :
     rospy.loginfo('[SocketNode] perintah: %s', command)
     ros_data = String()
 
+    self.sio.emit("received_perintah", { 'command': command })
+
+    if self.isRequestedVision and command != 'reset' :
+      msg = "[SocketNode] Sedang menjalankan perintah!"
+      self.sio.emit('cmd_status', { 'msg': msg, 'isDone': False })
+      return
+
     if command == "reset" :
       ros_data.data = "stop"
       self.vision_pub.publish(ros_data)
     elif self.isVisionCommand(command) :
       ros_data.data = command.split("|")[1]
       self.vision_pub.publish(ros_data)
-
-    self.sio.emit("received_perintah", { 'command': command })
 
     ros_data.data = command
     self.command_pub.publish(ros_data)
