@@ -128,7 +128,7 @@ io.on("connection", (socket) => {
       return;
     }
 
-    if (!cmd_receiver || !cmd_status) {
+    if (!cmd_receiver) {
       return warningInfo(`Sedang mengirim perintah!`);
     }
     cmd_receiver = false;
