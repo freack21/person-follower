@@ -21,6 +21,7 @@ void hidupkanDriver() {
 }
 
 void reset() {
+  berhenti();
   matikanDriver();
 }
 
