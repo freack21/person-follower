@@ -26,7 +26,7 @@ int LPWM3 =9;
 int R_EN3=34;
 int L_EN3=36;
 
-int vSpeed = 0;
+int vSpeed = 25;
 bool isReset = false;
 bool isCommandDone = true;
 

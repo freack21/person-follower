@@ -71,7 +71,7 @@ class CameraNode :
     ros_data = String()
     cmd = ""
 
-    if np.abs(distance_up) <= 100 :
+    if np.abs(distance_up) <= 16 :
       cmd = "berhenti"
     elif np.abs(x_margin) <= 64 :
       cmd = "maju"
