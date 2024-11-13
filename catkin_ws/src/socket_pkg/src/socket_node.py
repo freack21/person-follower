@@ -20,7 +20,7 @@ class SocketNode :
   def initGlobalVars(self) :
     self.myUsername = "Miria"
     # self.alamatIP = "http://10.234.218.255:3000/"
-    self.alamatIP = "http://172.16.252.77:3000/"
+    self.alamatIP = "http://172.16.252.187:3000/"
     # self.alamatIP = "http://localhost:3000/"
 
     self.isRequestedVision = False
@@ -99,7 +99,7 @@ class SocketNode :
 
     self.sio.emit("received_perintah", { 'command': command })
 
-    if self.isRequestedVision and command != 'reset' :
+    if self.isRequestedVision and command != 'reset' and (not 'stop' in command) :
       msg = "[SocketNode] Sedang menjalankan perintah!"
       self.sio.emit('cmd_status', { 'msg': msg, 'isDone': False })
       return

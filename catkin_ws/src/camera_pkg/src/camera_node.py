@@ -59,6 +59,11 @@ class CameraNode :
     if vision_data == "stop" :
       self.isRequested = False
       self.requestedService = ""
+
+      self.lastCmd = ""
+      ros_data = String()
+      ros_data.data = "berhenti"
+      self.command_pub.publish(ros_data)
     else :
       self.isRequested = True
       self.requestedService = vision_data

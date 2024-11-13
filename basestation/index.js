@@ -42,8 +42,6 @@ let id_robot;
 
 let cmd_receiver = true;
 
-let cmd_status = true;
-
 let cmd_counter = 0;
 
 const sleep = async (ms) => {

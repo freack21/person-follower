@@ -189,6 +189,7 @@
 
       <!-- Tombol Follow Person -->
       <button class="btn follow-btn" onclick="followPerson()">Follow Person</button>
+      <button class="btn reset-btn" onclick="stopFollowPerson()">Stop Follow Person</button>
       <button class="btn reset-btn" onclick="reset()">Reset</button>
     </div>
 
@@ -221,6 +222,12 @@
       function followPerson() {
         socket.emit("kirim-perintah", {
           perintah: "vision|followPerson",
+        });
+      }
+
+      function stopFollowPerson() {
+        socket.emit("kirim-perintah", {
+          perintah: "vision|stop",
         });
       }
 
