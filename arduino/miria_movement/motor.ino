@@ -71,23 +71,23 @@ void kiri() {
 
 void putar_kanan() {
   analogWrite(LPWM,0);
-  analogWrite(RPWM,(30+vSpeed));
+  analogWrite(RPWM,(5+vSpeed));
   analogWrite(LPWM1,0);
-  analogWrite(RPWM1,(30+vSpeed));
+  analogWrite(RPWM1,(5+vSpeed));
   analogWrite(LPWM2,0);
-  analogWrite(RPWM2,(30+vSpeed));
+  analogWrite(RPWM2,(5+vSpeed));
   analogWrite(LPWM3,0);
-  analogWrite(RPWM3,(30+vSpeed));
+  analogWrite(RPWM3,(5+vSpeed));
 }
 
 void putar_kiri() {
-  analogWrite(LPWM,(30+vSpeed));
+  analogWrite(LPWM,(5+vSpeed));
   analogWrite(RPWM,0);
-  analogWrite(LPWM1,(30+vSpeed));
+  analogWrite(LPWM1,(5+vSpeed));
   analogWrite(RPWM1,0);
-  analogWrite(LPWM2,(30+vSpeed));
+  analogWrite(LPWM2,(5+vSpeed));
   analogWrite(RPWM2,0);
-  analogWrite(LPWM3,(30+vSpeed));
+  analogWrite(LPWM3,(5+vSpeed));
   analogWrite(RPWM3,0);
 }
 

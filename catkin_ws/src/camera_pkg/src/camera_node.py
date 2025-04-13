@@ -26,7 +26,7 @@ class CameraNode :
 
   def initCamAndModel(self) :
     # Open the webcam
-    self.cap = cv2.VideoCapture(0)
+    self.cap = cv2.VideoCapture(2)
     if not self.cap.isOpened():
       raise Exception("[CameraNode] No Camera")
 
@@ -81,9 +81,9 @@ class CameraNode :
     elif np.abs(x_margin) <= 64 :
       cmd = "maju"
     elif x_margin < 0 :
-      cmd = "kanan_atas"
+      cmd = "putar_kanan"
     elif x_margin > 0 :
-      cmd = "kiri_atas"
+      cmd = "putar_kiri"
 
     if self.lastCmd == cmd :
       return
